@@ -21,6 +21,13 @@ namespace ImageGeneration
             this.type = type;
         }
 
+        /*
+         * Public wrapper for rendering an example image.
+         * Creates empty canvas with specified (or default 256x256) dimensions.
+         * Calls private rendering functions based on type. Can throw error if type
+         * is somehow not recognized.
+         * Handles opening and saving file.
+         */
         public void Render(int width = 256, int height = 256)
         {
             SKImageInfo imageInfo = new(width, height);
@@ -46,6 +53,9 @@ namespace ImageGeneration
             data.SaveTo(file);
         }
 
+        /*
+         * Draws some squares.
+         */
         private static void RenderSquares(SKCanvas canvas, int width, int height)
         {
             float spaceX = (float)width / 16;
@@ -68,6 +78,9 @@ namespace ImageGeneration
             canvas.DrawRect(spaceX * 3, spaceY * 3, widthS, heightS, paint);
         }
 
+        /*
+         * Loads in a music font (SMuFL compliant) and draws some notes and text.
+         */
         private void RenderNotes(SKCanvas canvas, int width, int height)
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -93,6 +106,9 @@ namespace ImageGeneration
             canvas.DrawText("Sample text", 42f, 40f, paint);
         }
 
+        /*
+         * TODO: Render a simple scale. Requires additional framework.
+         */
         private void RenderScale(SKCanvas canvas, int width, int height)
         {
             throw new NotImplementedException(); // TODO

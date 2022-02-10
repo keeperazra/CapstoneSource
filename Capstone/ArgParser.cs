@@ -2,8 +2,12 @@
 
 namespace ArgHandling
 {
+    /*
+     * Converts an array of arguments into a Dictionary of keyword arguments.
+     */
     public class ArgumentParser
     {
+        // TODO: Ditch arguments list in favor of just argMap
         public ArrayList Arguments
         {
             get; set;
@@ -11,6 +15,10 @@ namespace ArgHandling
         public Dictionary<string, Argument> argMap;
         public bool defaults;
 
+        /*
+         * Include -h/--help default help argument
+         * TODO: Initialize with list of Arguments?
+         */
         public ArgumentParser(bool defaults = true)
         {
             Arguments = new ArrayList();
@@ -23,6 +31,10 @@ namespace ArgHandling
             UpdateArgMap();
         }
 
+        /*
+         * Updates argMap using Arguments property
+         * TODO: Depreciate in favor of using AddArgument to add directly to argMap
+         */
         public void UpdateArgMap()
         {
             argMap = new Dictionary<string, Argument>();
@@ -33,9 +45,13 @@ namespace ArgHandling
             }
         }
 
+        /*
+         * Adds an argument to the Arguments list and calls UpdateArgMap if update is true
+         * TODO: Add argument to argMap directy and remove Arguments property
+         */
         public void AddArgument(Argument argument, bool update = true)
         {
-            if (argument == null)
+            if (argument == null) // Not likely, but a problem all the same
             {
                 throw new ArgumentNullException(nameof(argument));
             }
@@ -63,13 +79,14 @@ namespace ArgHandling
             {
                 string arg = args[i];
                 string value = null;
-                if (arg.Contains('='))
+                if (arg.Contains('=')) // e.g. --file=some/path/to.file
                 {
-                    arg = arg.Split('=')[0];
-                    value = arg.Split('=')[1];
+                    arg = arg.Split('=', 1)[0];
+                    value = arg.Split('=', 1)[1];
                 }
                 else if (i + 1 < args.Length && args[i + 1][0] != '-')
                 {
+                    // If the next arg is not prefixed by "-" assume it is the parameter/value of the current arg
                     i++;
                     value = args[i];
                 }
@@ -87,12 +104,16 @@ namespace ArgHandling
                 }
                 else
                 {
+                    // TODO: allow overriding handling of unrecognized parameters?
                     Console.WriteLine($"NOTICE: Ignoring unrecognized parameter \"{arg}\"");
                 }
             }
             return kwargs;
         }
 
+        /*
+         * Automatically generates and prints help message to console
+         */
         public void PrintHelp()
         {
             string syntaxString = "program";

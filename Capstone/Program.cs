@@ -33,7 +33,7 @@ else
     demo = new();
 }
 
-demo.Render();
+demo.Render(); // Default demo
 
 demo = new("demo notes.png", ExampleType.Notes);
-demo.Render();
+demo.Render(); // Notes demo
