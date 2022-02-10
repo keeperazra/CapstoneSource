@@ -34,3 +34,6 @@ else
 }
 
 demo.Render();
+
+demo = new("demo notes.png", ExampleType.Notes);
+demo.Render();

@@ -1,5 +1,5 @@
 ﻿using SkiaSharp;
-using System.Numerics;
+using System.Reflection;
 
 namespace ImageGeneration
 {
@@ -32,10 +32,10 @@ namespace ImageGeneration
                     RenderSquares(canvas, width, height);
                     break;
                 case ExampleType.Notes:
-                    RenderNotes();
+                    RenderNotes(canvas, width, height);
                     break;
                 case ExampleType.Scale:
-                    RenderScale();
+                    RenderScale(canvas, width, height);
                     break;
                 default:
                     throw new ArgumentException("ExampleImage created with unknown type!");
@@ -52,6 +52,7 @@ namespace ImageGeneration
             float spaceY = (float)height / 16;
             float widthS = (float)width / 4;
             float heightS = (float)height / 4;
+            canvas.DrawColor(SKColors.White);
             SKPaint paint = new()
             {
                 TextSize = 64f,
@@ -67,12 +68,32 @@ namespace ImageGeneration
             canvas.DrawRect(spaceX * 3, spaceY * 3, widthS, heightS, paint);
         }
 
-        private void RenderNotes()
+        private void RenderNotes(SKCanvas canvas, int width, int height)
         {
-            throw new NotImplementedException(); // TODO
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            using Stream assemblyStream = assembly.GetManifestResourceStream("Capstone.Resources.Fonts.Bravura.otf");
+            if (assemblyStream == null)
+            {
+                throw new FileNotFoundException("Could not find Resources\\Fonts\\Bravura.otf");
+            }
+            SKTypeface bravura = SKTypeface.FromStream(assemblyStream);
+
+            canvas.DrawColor(SKColors.White);
+
+            SKPaint paint = new()
+            {
+                TextSize = 32f,
+                IsAntialias = true,
+                Color = SKColors.Black,
+                Typeface = bravura,
+            };
+
+            canvas.DrawText("\uE1D7", width / 2f, height / 2f, paint); // Draw quarter note in middle
+            paint.Typeface = SKTypeface.Default; // Bravura cannot be used to render text apparently, need some other font?
+            canvas.DrawText("Sample text", 42f, 40f, paint);
         }
 
-        private void RenderScale()
+        private void RenderScale(SKCanvas canvas, int width, int height)
         {
             throw new NotImplementedException(); // TODO
         }
