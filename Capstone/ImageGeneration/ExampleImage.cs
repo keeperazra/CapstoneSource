@@ -101,7 +101,7 @@ namespace ImageGeneration
                 Typeface = bravura,
             };
 
-            canvas.DrawText("\uE1D7", width / 2f, height / 2f, paint); // Draw quarter note in middle
+            canvas.DrawText("\uE1D7", width / 2f, height / 2f, paint); // Draw eighth note in middle
             paint.Typeface = SKTypeface.Default; // Bravura cannot be used to render text apparently, need some other font?
             canvas.DrawText("Sample text", 42f, 40f, paint);
         }
