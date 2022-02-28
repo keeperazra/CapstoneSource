@@ -37,3 +37,9 @@ demo.Render(); // Default demo
 
 demo = new("demo notes.png", ExampleType.Notes);
 demo.Render(); // Notes demo
+
+// Testing SymbolMapping (this has since been moved to the notes demo)
+/*GlyphLookup glyphLookup = new();
+glyphLookup.LoadGlyphMap();
+string key = glyphLookup.GlyphNames.Keys.First();
+Console.WriteLine(glyphLookup.GlyphNames[key].Codepoint);*/

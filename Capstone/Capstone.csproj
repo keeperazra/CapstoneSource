@@ -10,11 +10,13 @@
   <ItemGroup>
     <None Remove="Resources\Fonts\Bravura.otf" />
     <None Remove="Resources\Fonts\BravuraText.otf" />
+    <None Remove="Resources\Fonts\glyphnames.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\Fonts\Bravura.otf" />
     <EmbeddedResource Include="Resources\Fonts\BravuraText.otf" />
+    <EmbeddedResource Include="Resources\Fonts\glyphnames.json" />
   </ItemGroup>
 
   <ItemGroup>
