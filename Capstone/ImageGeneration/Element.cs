@@ -1,5 +1,4 @@
 ﻿using SkiaSharp;
-using System.Numerics;
 
 namespace ImageGeneration
 {
@@ -24,33 +23,33 @@ namespace ImageGeneration
     public abstract class IElement
     {
         public ElementType ElementType { get; set; }
-        public Vector2 Position { get; set; }
-        public Vector2 Size { get; set; }
+        public SKPoint Position { get; set; }
+        public SKPoint Size { get; set; }
         public abstract void Draw(Document document);
-        public virtual Vector2 SnapTo(SnapPosition snapPosition, Vector2? offset = null)
+        public virtual SKPoint SnapTo(SnapPosition snapPosition, SKPoint? offset = null)
         {
             if (offset == null)
             {
-                offset = Vector2.Zero;
+                offset = new(0, 0);
             }
-            Position += (Vector2)offset;
+            Position += (SKPoint)offset;
             return snapPosition switch
             {
                 SnapPosition.TopLeft => Position,
-                SnapPosition.TopRight => new Vector2(Position.X + Size.X, Position.Y),
-                SnapPosition.Top => new Vector2(Position.X + (Size.X / 2), Position.Y),
-                SnapPosition.MidLeft => new Vector2(Position.X, Position.Y + (Size.Y / 2)),
-                SnapPosition.MidRight => new Vector2(Position.X + Size.X, Position.Y + (Size.Y / 2)),
-                SnapPosition.Center => new Vector2(Position.X + (Size.X / 2), Position.Y + (Size.Y / 2)),
-                SnapPosition.BottomLeft => new Vector2(Position.X, Position.Y + Size.Y),
-                SnapPosition.Bottom => new Vector2(Position.X + (Size.X / 2), Position.Y + Size.Y),
-                SnapPosition.BottomRight => new Vector2(Position.X + Size.X, Position.Y + Size.Y),
-                _ => Vector2.Zero,
+                SnapPosition.TopRight => new SKPoint(Position.X + Size.X, Position.Y),
+                SnapPosition.Top => new SKPoint(Position.X + (Size.X / 2), Position.Y),
+                SnapPosition.MidLeft => new SKPoint(Position.X, Position.Y + (Size.Y / 2)),
+                SnapPosition.MidRight => new SKPoint(Position.X + Size.X, Position.Y + (Size.Y / 2)),
+                SnapPosition.Center => new SKPoint(Position.X + (Size.X / 2), Position.Y + (Size.Y / 2)),
+                SnapPosition.BottomLeft => new SKPoint(Position.X, Position.Y + Size.Y),
+                SnapPosition.Bottom => new SKPoint(Position.X + (Size.X / 2), Position.Y + Size.Y),
+                SnapPosition.BottomRight => new SKPoint(Position.X + Size.X, Position.Y + Size.Y),
+                _ => new SKPoint(0, 0), // Maybe point this somewhere else?
             };
         }
-        public virtual Vector2 SnapTo(SnapPosition snapPosition, int offsetX, int offsetY)
+        public virtual SKPoint SnapTo(SnapPosition snapPosition, int offsetX, int offsetY)
         {
-            Vector2 offset = new(offsetX, offsetY);
+            SKPoint offset = new(offsetX, offsetY);
             return SnapTo(snapPosition, offset);
         }
     }
@@ -64,7 +63,7 @@ namespace ImageGeneration
     public class GlyphElement : IElement
     {
         public string Glyph { get; set; } // Should be only one character, but SymbolMapping does not return a single char
-        public GlyphElement(string glyph, Vector2 pos, Vector2 size)
+        public GlyphElement(string glyph, SKPoint pos, SKPoint size)
         {
             Glyph = glyph;
             Position = pos;
@@ -80,13 +79,13 @@ namespace ImageGeneration
                 Typeface = document.MusicFont
             };
 
-            document.Canvas.DrawText(Glyph, Position.Y, Position.Y, paint);
+            document.Canvas.DrawText(Glyph, Position, paint);
         }
     }
     public class TextElement : IElement
     {
         public string Text { get; set; }
-        public TextElement(string text, Vector2 pos, Vector2 size)
+        public TextElement(string text, SKPoint pos, SKPoint size)
         {
             Text = text;
             ElementType = ElementType.Text;
@@ -103,7 +102,7 @@ namespace ImageGeneration
                 Typeface = document.TextFont
             };
 
-            document.Canvas.DrawText(Text, Position.Y, Position.Y, paint);
+            document.Canvas.DrawText(Text, Position, paint);
         }
     }
 }

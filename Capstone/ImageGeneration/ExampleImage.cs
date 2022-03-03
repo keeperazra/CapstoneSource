@@ -1,5 +1,4 @@
 ﻿using SkiaSharp;
-using System.Numerics;
 
 namespace ImageGeneration
 {
@@ -23,7 +22,7 @@ namespace ImageGeneration
 
         /*
          * Public wrapper for rendering an example image.
-         * Creates empty canvas with specified (or default 256x256) dimensions.
+         * Creates empty canvas with specified (or default 800x800) dimensions.
          * Calls private rendering functions based on type. Can throw error if type
          * is somehow not recognized.
          * Handles opening and saving file.
@@ -83,7 +82,7 @@ namespace ImageGeneration
          */
         private void RenderNotes(int width, int height)
         {
-            Vector2 dims = new Vector2(width, height);
+            SKPointI dims = new(width, height);
             Document document = new(filePath, dims);
             SKPaint paint = new()
             {
@@ -92,7 +91,7 @@ namespace ImageGeneration
                 Typeface = document.TextFont
             }; // This is an awkward way to check the size of the text
             string sampleText = "Sample text";
-            Vector2 textSize = new Vector2(paint.MeasureText(sampleText), 16);
+            SKPoint textSize = new(paint.MeasureText(sampleText), 16);
             TextElement sample = new(sampleText, document.Margins, textSize);
             sample.Draw(document);
 
@@ -105,8 +104,8 @@ namespace ImageGeneration
                 IsAntialias = true,
                 Typeface = document.TextFont
             }; // This is an awkward way to check the size of the text
-            Vector2 glyphSize = new Vector2(paint.MeasureText(sampleGlyph), 24);
-            GlyphElement glyph = new(sampleGlyph, sample.SnapTo(SnapPosition.Bottom, new Vector2(0, 20)), glyphSize);
+            SKPoint glyphSize = new(paint.MeasureText(sampleGlyph), 24);
+            GlyphElement glyph = new(sampleGlyph, sample.SnapTo(SnapPosition.Bottom, new SKPoint(0, 20)), glyphSize);
             glyph.Draw(document);
 
             document.SaveFile();

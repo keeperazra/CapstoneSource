@@ -1,5 +1,4 @@
 ﻿using SkiaSharp;
-using System.Numerics;
 using System.Reflection;
 
 namespace ImageGeneration
@@ -9,24 +8,24 @@ namespace ImageGeneration
      */
     public class Document
     {
-        public Vector2 Dimensions { get; set; } // TODO: Force int?
-        public Vector2 Margins { get; set; } // TODO: Force int?
+        public SKPointI Dimensions { get; set; } // TODO: Force int?
+        public SKPoint Margins { get; set; } // TODO: Force int?
         public SKTypeface MusicFont { get; set; }
         public SKTypeface TextFont { get; set; }
         public SKSurface Surface { get; set; }
         public SKCanvas Canvas { get; set; }
         public string filePath;
-        public Document(string file, Vector2 dimensions, Vector2? margins = null)
+        public Document(string file, SKPointI dimensions, SKPoint? margins = null)
         {
             filePath = file;
-            this.Dimensions = dimensions;
+            Dimensions = dimensions;
             if (margins != null)
             {
-                this.Margins = (Vector2)margins;
+                Margins = (SKPoint)margins;
             }
             else
             {
-                this.Margins = new(50, 50);
+                Margins = new(50, 50);
             }
             LoadFontDefaults();
             LoadCanvas();
@@ -44,7 +43,7 @@ namespace ImageGeneration
         }
         private void LoadCanvas()
         {
-            SKImageInfo imgInfo = new((int)Dimensions.X, (int)Dimensions.Y);
+            SKImageInfo imgInfo = new(Dimensions.X, Dimensions.Y);
             Surface = SKSurface.Create(imgInfo);
             Canvas = Surface.Canvas;
             Canvas.DrawColor(SKColors.White); // TODO: Change default color?
