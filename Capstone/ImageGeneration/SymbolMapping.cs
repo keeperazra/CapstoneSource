@@ -26,7 +26,7 @@ namespace ImageGeneration
 
         public string GetCharacter(string glyph)
         {
-            if(GlyphNames.ContainsKey(glyph))
+            if (GlyphNames.ContainsKey(glyph))
             {
                 string codepoint = GlyphNames[glyph].Codepoint;
                 return char.ConvertFromUtf32(int.Parse(codepoint[(codepoint.IndexOf('+') + 1)..], style: System.Globalization.NumberStyles.HexNumber));

@@ -1,5 +1,5 @@
 ﻿using SkiaSharp;
-using System.Reflection;
+using System.Numerics;
 
 namespace ImageGeneration
 {
@@ -28,36 +28,32 @@ namespace ImageGeneration
          * is somehow not recognized.
          * Handles opening and saving file.
          */
-        public void Render(int width = 256, int height = 256)
+        public void Render(int width = 800, int height = 800)
         {
-            SKImageInfo imageInfo = new(width, height);
-            SKSurface surface = SKSurface.Create(imageInfo);
-            SKCanvas canvas = surface.Canvas;
             switch (type)
             {
                 case ExampleType.Squares:
-                    RenderSquares(canvas, width, height);
+                    RenderSquares(width, height);
                     break;
                 case ExampleType.Notes:
-                    RenderNotes(canvas, width, height);
+                    RenderNotes(width, height);
                     break;
                 case ExampleType.Scale:
-                    RenderScale(canvas, width, height);
+                    RenderScale(width, height);
                     break;
                 default:
                     throw new ArgumentException("ExampleImage created with unknown type!");
             }
-            SKImage cImage = surface.Snapshot();
-            SKData data = cImage.Encode(SKEncodedImageFormat.Png, 80);
-            using FileStream file = File.OpenWrite(filePath);
-            data.SaveTo(file);
         }
 
         /*
          * Draws some squares.
          */
-        private static void RenderSquares(SKCanvas canvas, int width, int height)
+        private void RenderSquares(int width, int height)
         {
+            SKImageInfo imageInfo = new(width, height);
+            SKSurface surface = SKSurface.Create(imageInfo);
+            SKCanvas canvas = surface.Canvas;
             float spaceX = (float)width / 16;
             float spaceY = (float)height / 16;
             float widthS = (float)width / 4;
@@ -76,43 +72,50 @@ namespace ImageGeneration
             canvas.DrawRect(spaceX * 2, spaceY * 2, widthS, heightS, paint);
             paint.Color = SKColors.Black;
             canvas.DrawRect(spaceX * 3, spaceY * 3, widthS, heightS, paint);
+            SKImage cImage = surface.Snapshot();
+            SKData data = cImage.Encode(SKEncodedImageFormat.Png, 80);
+            using FileStream file = File.OpenWrite(filePath);
+            data.SaveTo(file);
         }
 
         /*
          * Loads in a music font (SMuFL compliant) and draws some notes and text.
          */
-        private void RenderNotes(SKCanvas canvas, int width, int height)
+        private void RenderNotes(int width, int height)
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            using Stream assemblyStream = assembly.GetManifestResourceStream("Capstone.Resources.Fonts.Bravura.otf");
-            if (assemblyStream == null)
-            {
-                throw new FileNotFoundException("Could not find Resources\\Fonts\\Bravura.otf");
-            }
-            SKTypeface bravura = SKTypeface.FromStream(assemblyStream);
-
-            canvas.DrawColor(SKColors.White);
-
+            Vector2 dims = new Vector2(width, height);
+            Document document = new(filePath, dims);
             SKPaint paint = new()
             {
-                TextSize = 32f,
+                TextSize = 16f,
                 IsAntialias = true,
-                Color = SKColors.Black,
-                Typeface = bravura,
-            };
+                Typeface = document.TextFont
+            }; // This is an awkward way to check the size of the text
+            string sampleText = "Sample text";
+            Vector2 textSize = new Vector2(paint.MeasureText(sampleText), 16);
+            TextElement sample = new(sampleText, document.Margins, textSize);
+            sample.Draw(document);
 
             GlyphLookup glyphLookup = new();
             glyphLookup.LoadGlyphMap();
+            string sampleGlyph = glyphLookup.GetCharacter("note8thUp");
+            paint = new()
+            {
+                TextSize = 16f,
+                IsAntialias = true,
+                Typeface = document.TextFont
+            }; // This is an awkward way to check the size of the text
+            Vector2 glyphSize = new Vector2(paint.MeasureText(sampleGlyph), 24);
+            GlyphElement glyph = new(sampleGlyph, sample.SnapTo(SnapPosition.Bottom, new Vector2(0, 20)), glyphSize);
+            glyph.Draw(document);
 
-            canvas.DrawText(glyphLookup.GetCharacter("note8thUp") + glyphLookup.GetCharacter("note8thDown"), width / 2f, height / 2f, paint); // Draw eighth note in middle
-            paint.Typeface = SKTypeface.Default; // Bravura cannot be used to render text apparently, need some other font?
-            canvas.DrawText("Sample text", 42f, 40f, paint);
+            document.SaveFile();
         }
 
         /*
          * TODO: Render a simple scale. Requires additional framework.
          */
-        private void RenderScale(SKCanvas canvas, int width, int height)
+        private void RenderScale(int width, int height)
         {
             throw new NotImplementedException(); // TODO
         }
