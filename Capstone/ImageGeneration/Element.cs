@@ -7,7 +7,7 @@ namespace ImageGeneration
         Primitive,
         Glyph,
         Text
-    }
+    } // Remove?
     public enum SnapPosition
     {
         TopLeft,
@@ -25,7 +25,10 @@ namespace ImageGeneration
         public ElementType ElementType { get; set; }
         public SKPoint Position { get; set; }
         public SKPoint Size { get; set; }
-        public abstract void Draw(Document document);
+        public Document Document { get; set; }
+        public float FontSize { get; set; }
+        public SKPaint Paint { get; set; }
+        public abstract void Draw();
         public virtual SKPoint SnapTo(SnapPosition snapPosition, SKPoint? offset = null)
         {
             if (offset == null)
@@ -55,54 +58,55 @@ namespace ImageGeneration
     }
     public class PrimitiveElement : IElement
     {
-        public override void Draw(Document document)
+        public override void Draw()
         {
             throw new NotImplementedException();
         }
     }
     public class GlyphElement : IElement
     {
-        public string Glyph { get; set; } // Should be only one character, but SymbolMapping does not return a single char
-        public GlyphElement(string glyph, SKPoint pos, SKPoint size)
+        public string Glyph { get; set; } // Should be only one character, but SymbolMapping returns a string
+        public GlyphElement(string glyph, SKPoint pos, Document document, float size = 24)
         {
+            ElementType = ElementType.Glyph;
             Glyph = glyph;
             Position = pos;
-            Size = size;
+            FontSize = size;
+            Document = document;
+            GetPaintAndTextSize();
         }
-        public override void Draw(Document document)
+        public void GetPaintAndTextSize()
         {
-            SKPaint paint = new()
-            {
-                TextSize = 24f, // TODO: Must be dynamic
-                IsAntialias = true,
-                Color = SKColors.Black,
-                Typeface = document.MusicFont
-            };
-
-            document.Canvas.DrawText(Glyph, Position, paint);
+            Paint = Document.MusicPaint.Clone();
+            Paint.TextSize = FontSize;
+            Size = new(Paint.MeasureText(Glyph), FontSize);
+        }
+        public override void Draw()
+        {
+            Document.Canvas.DrawText(Glyph, Position, Paint);
         }
     }
     public class TextElement : IElement
     {
         public string Text { get; set; }
-        public TextElement(string text, SKPoint pos, SKPoint size)
+        public TextElement(string text, SKPoint pos, Document document, float size = 16)
         {
             Text = text;
             ElementType = ElementType.Text;
             Position = pos;
-            Size = size;
+            FontSize = size;
+            Document = document;
+            GetPaintAndTextSize();
         }
-        public override void Draw(Document document)
+        public void GetPaintAndTextSize()
         {
-            SKPaint paint = new()
-            {
-                TextSize = 16f, // TODO: Must be dynamic
-                IsAntialias = true,
-                Color = SKColors.Black,
-                Typeface = document.TextFont
-            };
-
-            document.Canvas.DrawText(Text, Position, paint);
+            Paint = Document.TextPaint.Clone();
+            Paint.TextSize = FontSize;
+            Size = new(Paint.MeasureText(Text), FontSize);
+        }
+        public override void Draw()
+        {
+            Document.Canvas.DrawText(Text, Position, Paint);
         }
     }
 }

@@ -8,10 +8,12 @@ namespace ImageGeneration
      */
     public class Document
     {
-        public SKPointI Dimensions { get; set; } // TODO: Force int?
-        public SKPoint Margins { get; set; } // TODO: Force int?
+        public SKPointI Dimensions { get; set; }
+        public SKPoint Margins { get; set; }
         public SKTypeface MusicFont { get; set; }
+        public SKPaint MusicPaint { get; set; }
         public SKTypeface TextFont { get; set; }
+        public SKPaint TextPaint { get; set; }
         public SKSurface Surface { get; set; }
         public SKCanvas Canvas { get; set; }
         public string filePath;
@@ -39,7 +41,21 @@ namespace ImageGeneration
                 throw new FileNotFoundException("Could not find Resources\\Fonts\\Bravura.otf");
             }
             MusicFont = SKTypeface.FromStream(assemblyStream);
+            MusicPaint = new()
+            {
+                TextSize = 24f, // TODO: Must be dynamic
+                IsAntialias = true,
+                Color = SKColors.Black,
+                Typeface = MusicFont
+            };
             TextFont = SKTypeface.Default; // TODO Pick/package a better option?
+            TextPaint = new()
+            {
+                TextSize = 16f, // TODO: Must be dynamic
+                IsAntialias = true,
+                Color = SKColors.Black,
+                Typeface = TextFont
+            };
         }
         private void LoadCanvas()
         {

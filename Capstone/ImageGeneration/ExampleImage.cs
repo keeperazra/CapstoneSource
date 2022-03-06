@@ -84,29 +84,15 @@ namespace ImageGeneration
         {
             SKPointI dims = new(width, height);
             Document document = new(filePath, dims);
-            SKPaint paint = new()
-            {
-                TextSize = 16f,
-                IsAntialias = true,
-                Typeface = document.TextFont
-            }; // This is an awkward way to check the size of the text
             string sampleText = "Sample text";
-            SKPoint textSize = new(paint.MeasureText(sampleText), 16);
-            TextElement sample = new(sampleText, document.Margins, textSize);
-            sample.Draw(document);
+            TextElement sample = new(sampleText, document.Margins, document);
+            sample.Draw();
 
             GlyphLookup glyphLookup = new();
             glyphLookup.LoadGlyphMap();
             string sampleGlyph = glyphLookup.GetCharacter("note8thUp");
-            paint = new()
-            {
-                TextSize = 16f,
-                IsAntialias = true,
-                Typeface = document.TextFont
-            }; // This is an awkward way to check the size of the text
-            SKPoint glyphSize = new(paint.MeasureText(sampleGlyph), 24);
-            GlyphElement glyph = new(sampleGlyph, sample.SnapTo(SnapPosition.Bottom, new SKPoint(0, 20)), glyphSize);
-            glyph.Draw(document);
+            GlyphElement glyph = new(sampleGlyph, sample.SnapTo(SnapPosition.Bottom, new SKPoint(0, 20)), document);
+            glyph.Draw();
 
             document.SaveFile();
         }
