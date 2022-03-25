@@ -31,7 +31,7 @@ namespace ImageGeneration
                 string codepoint = GlyphNames[glyph].Codepoint;
                 return char.ConvertFromUtf32(int.Parse(codepoint[(codepoint.IndexOf('+') + 1)..], style: System.Globalization.NumberStyles.HexNumber));
             }
-            return "";
+            throw new ArgumentException("Could not find glyph " + glyph);
         }
     }
     public class GlyphNames : Dictionary<string, GlyphData> { };

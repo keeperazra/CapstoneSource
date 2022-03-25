@@ -59,7 +59,7 @@ box.LineTo(whole.SnapTo(SnapPosition.BottomLeft));
 box.LineTo(whole.SnapTo(SnapPosition.TopLeft));
 document.Canvas.DrawPath(box, paint);
 //GlyphElement half = new(glyphLookup.GetCharacter("noteheadHalf"), whole.SnapTo(SnapPosition.MidRight), document);
-TextElement half = new("more", whole.SnapTo(SnapPosition.MidRight), document);
+TextElement half = new("more", whole.SnapTo(SnapPosition.TextRight), document);
 half.Draw();
 document.SaveFile();
 

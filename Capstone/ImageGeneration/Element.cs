@@ -18,7 +18,10 @@ namespace ImageGeneration
         Center,
         BottomLeft,
         BottomRight,
-        Bottom
+        Bottom,
+        TextLeft,
+        TextRight,
+        TextCenter
     }
     public abstract class IElement
     {
@@ -40,13 +43,13 @@ namespace ImageGeneration
                 SnapPosition.TopLeft => (SKPoint)offset + Position,
                 SnapPosition.TopRight => (SKPoint)offset + new SKPoint(Position.X + Size.X, Position.Y),
                 SnapPosition.Top => (SKPoint)offset + new SKPoint(Position.X + (Size.X / 2), Position.Y),
-                SnapPosition.MidLeft => (SKPoint)offset + new SKPoint(Position.X, Position.Y + (Size.Y / 2)),
-                SnapPosition.MidRight => (SKPoint)offset + new SKPoint(Position.X + Size.X, Position.Y + (Size.Y / 2)),
-                SnapPosition.Center => (SKPoint)offset + new SKPoint(Position.X + (Size.X / 2), Position.Y + (Size.Y / 2)),
+                SnapPosition.MidLeft or SnapPosition.TextLeft => (SKPoint)offset + new SKPoint(Position.X, Position.Y + (Size.Y / 2)),
+                SnapPosition.MidRight or SnapPosition.TextRight => (SKPoint)offset + new SKPoint(Position.X + Size.X, Position.Y + (Size.Y / 2)),
+                SnapPosition.Center or SnapPosition.TextCenter => (SKPoint)offset + new SKPoint(Position.X + (Size.X / 2), Position.Y + (Size.Y / 2)),
                 SnapPosition.BottomLeft => (SKPoint)offset + new SKPoint(Position.X, Position.Y + Size.Y),
                 SnapPosition.Bottom => (SKPoint)offset + new SKPoint(Position.X + (Size.X / 2), Position.Y + Size.Y),
                 SnapPosition.BottomRight => (SKPoint)offset + new SKPoint(Position.X + Size.X, Position.Y + Size.Y),
-                _ => new SKPoint(0, 0), // Maybe point this somewhere else?
+                _ => throw new ArgumentOutOfRangeException(paramName: nameof(snapPosition), message: "Unexpected offset given!") // Provide more information?
             };
         }
         public virtual SKPoint SnapTo(SnapPosition snapPosition, int offsetX, int offsetY)
@@ -100,13 +103,16 @@ namespace ImageGeneration
                 SnapPosition.TopLeft => (SKPoint)offset + new SKPoint(Position.X + TextBounds.Left, Position.Y + TextBounds.Top),
                 SnapPosition.TopRight => (SKPoint)offset + new SKPoint(Position.X + TextBounds.Right, Position.Y + TextBounds.Top),
                 SnapPosition.Top => (SKPoint)offset + new SKPoint(Position.X + TextBounds.MidX, Position.Y + TextBounds.Top),
-                SnapPosition.MidLeft => (SKPoint)offset + new SKPoint(Position.X + TextBounds.Left, Position.Y),
-                SnapPosition.MidRight => (SKPoint)offset + new SKPoint(Position.X + TextBounds.Right, Position.Y),
-                SnapPosition.Center => (SKPoint)offset + new SKPoint(Position.X + TextBounds.MidX, Position.Y),
+                SnapPosition.MidLeft => (SKPoint)offset + new SKPoint(Position.X + TextBounds.Left, Position.Y + TextBounds.MidY),
+                SnapPosition.MidRight => (SKPoint)offset + new SKPoint(Position.X + TextBounds.Right, Position.Y + TextBounds.MidY),
+                SnapPosition.Center => (SKPoint)offset + new SKPoint(Position.X + TextBounds.MidX, Position.Y + TextBounds.MidY),
                 SnapPosition.BottomLeft => (SKPoint)offset + new SKPoint(Position.X + TextBounds.Left, Position.Y + TextBounds.Bottom),
                 SnapPosition.Bottom => (SKPoint)offset + new SKPoint(Position.X + TextBounds.MidX, Position.Y + TextBounds.Bottom),
                 SnapPosition.BottomRight => (SKPoint)offset + new SKPoint(Position.X + TextBounds.Right, Position.Y + TextBounds.Bottom),
-                _ => new SKPoint(0, 0), // Maybe point this somewhere else?
+                SnapPosition.TextLeft => (SKPoint)offset + new SKPoint(Position.X + TextBounds.Left, Position.Y),
+                SnapPosition.TextRight => (SKPoint)offset + new SKPoint(Position.X + TextBounds.Right, Position.Y),
+                SnapPosition.TextCenter => (SKPoint)offset + new SKPoint(Position.X + TextBounds.MidX, Position.Y),
+                _ => throw new ArgumentOutOfRangeException(paramName: nameof(snapPosition), message: "Unexpected offset given!") // Provide more information?
             };
         }
     }
@@ -120,6 +126,9 @@ namespace ImageGeneration
         {
             Paint = Document.MusicPaint.Clone();
             Paint.TextSize = FontSize;
+            SKRect textBounds = new();
+            Paint.MeasureText(Text, ref textBounds);
+            TextBounds = textBounds;
             Size = new(Paint.MeasureText(Text), FontSize);
         }
     }
