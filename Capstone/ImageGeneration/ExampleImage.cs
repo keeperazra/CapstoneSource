@@ -89,7 +89,6 @@ namespace ImageGeneration
             sample.Draw();
 
             GlyphLookup glyphLookup = new();
-            glyphLookup.LoadGlyphMap();
             string sampleGlyph = glyphLookup.GetCharacter("note8thUp");
             GlyphElement glyph = new(sampleGlyph, sample.SnapTo(SnapPosition.Bottom, new SKPoint(0, 20)), document);
             glyph.Draw();

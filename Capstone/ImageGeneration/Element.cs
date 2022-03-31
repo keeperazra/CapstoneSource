@@ -118,9 +118,14 @@ namespace ImageGeneration
     }
     public class GlyphElement : TextElement
     {
-        public GlyphElement(string text, SKPoint pos, Document document, float size = 24) : base(text, pos, document, size)
+        public GlyphElement(string text, SKPoint pos, Document document, float size = 24, bool lookupGlyph = false) : base(text, pos, document, size)
         {
-            // Should be handled in base constructor
+            if (lookupGlyph)
+            {
+                GlyphLookup glyphLookup = new();
+                Text = glyphLookup.GetCharacter(text);
+            }
+            GetPaintAndTextSize();
         }
         public override void GetPaintAndTextSize()
         {

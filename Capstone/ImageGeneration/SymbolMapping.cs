@@ -6,7 +6,10 @@ namespace ImageGeneration
     public class GlyphLookup
     {
         public GlyphNames GlyphNames { get; set; }
-
+        public GlyphLookup()
+        {
+            LoadGlyphMap();
+        }
         public void LoadGlyphMap()
         {
             JsonSerializerOptions options = new()
