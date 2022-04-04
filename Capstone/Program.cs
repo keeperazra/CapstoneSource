@@ -40,7 +40,7 @@ demo.Render(); // Notes demo
 */
 Document document = new("sample scales.png", new(800, 800));
 
-Staff staff = new(document, null, new(), null);
+Staff staff = new(document, null, new(), new("gClef", new(), document, lookupGlyph: true));
 int len = 4;
 staff.notes.Add(new Note(len, -2, new(), document));
 staff.notes.Add(new Note(len, -1.5f, new(), document));

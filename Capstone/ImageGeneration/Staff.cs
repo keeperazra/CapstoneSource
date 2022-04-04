@@ -42,21 +42,21 @@ namespace ImageGeneration
             }
             if (Clef != null)
             {
-                currentX += 30;
+                currentX += 10;
                 Clef.Position = new(currentX, centerlineY);
                 Clef.Draw();
-                currentX += 20;
+                currentX += 10;
             }
             if (TimeSignature != null)
             {
-                currentX += 10;
+                currentX += 20;
                 TimeSignature.Position = new(currentX, centerlineY);
                 TimeSignature.Draw();
-                currentX += 20;
                 // TODO: Draw from measuredNotes
             }
             else
             {
+                currentX += 20;
                 foreach (var n in notes)
                 {
                     if (currentX == Document.Margins.X)
