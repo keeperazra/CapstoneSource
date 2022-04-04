@@ -43,21 +43,22 @@ namespace ImageGeneration
         }
         public override void Draw()
         {
-            if (glyphOverride != "")
+            if (glyphOverride == "")
             {
                 string uString = Upper.ToString();
                 if (Upper > 9)
                 {
                     GlyphElement leftNumeral = new(string.Concat(SigPrefix, uString.AsSpan(0, 1)), Position, Document, FontSize, true);
-                    leftNumeral.Position = new(leftNumeral.Position.X - (leftNumeral.TextBounds.Width / 2), leftNumeral.Position.Y);
+                    leftNumeral.Position = new(leftNumeral.Position.X - (leftNumeral.TextBounds.Width / 2), leftNumeral.Position.Y - (leftNumeral.TextBounds.Height / 2));
                     GlyphElement rightNumeral = new(string.Concat(SigPrefix, uString.AsSpan(1, 1)), Position, Document, FontSize, true);
-                    rightNumeral.Position = new(rightNumeral.Position.X + (rightNumeral.TextBounds.Width / 2), rightNumeral.Position.Y);
+                    rightNumeral.Position = new(rightNumeral.Position.X + (rightNumeral.TextBounds.Width / 2), rightNumeral.Position.Y - (rightNumeral.TextBounds.Height / 2));
                     leftNumeral.Draw();
                     rightNumeral.Draw();
                 }
                 else
                 {
-                    GlyphElement numeral = new(uString, Position, Document, FontSize, true);
+                    GlyphElement numeral = new(SigPrefix + uString, Position, Document, FontSize, true);
+                    numeral.Position = new(numeral.Position.X, numeral.Position.Y - (numeral.TextBounds.Height / 2));
                     numeral.Draw();
                 }
                 // TODO: Code deduplication
@@ -65,15 +66,16 @@ namespace ImageGeneration
                 if (Lower > 9)
                 {
                     GlyphElement leftNumeral = new(string.Concat(SigPrefix, lString.AsSpan(0, 1)), Position, Document, FontSize, true);
-                    leftNumeral.Position = new(leftNumeral.Position.X - (leftNumeral.TextBounds.Width / 2), leftNumeral.Position.Y);
+                    leftNumeral.Position = new(leftNumeral.Position.X - (leftNumeral.TextBounds.Width / 2), leftNumeral.Position.Y - (leftNumeral.TextBounds.Height / 2));
                     GlyphElement rightNumeral = new(string.Concat(SigPrefix, lString.AsSpan(1, 1)), Position, Document, FontSize, true);
-                    rightNumeral.Position = new(rightNumeral.Position.X + (rightNumeral.TextBounds.Width / 2), rightNumeral.Position.Y);
+                    rightNumeral.Position = new(rightNumeral.Position.X + (rightNumeral.TextBounds.Width / 2), rightNumeral.Position.Y - (rightNumeral.TextBounds.Height / 2));
                     leftNumeral.Draw();
                     rightNumeral.Draw();
                 }
                 else
                 {
-                    GlyphElement numeral = new(lString, Position, Document, FontSize, true);
+                    GlyphElement numeral = new(SigPrefix + lString, Position, Document, FontSize, true);
+                    numeral.Position = new(numeral.Position.X, numeral.Position.Y + (numeral.TextBounds.Height / 2));
                     numeral.Draw();
                 }
             }
