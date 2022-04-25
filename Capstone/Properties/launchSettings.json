@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Capstone": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "-f sample.txt -o test.png"
     }
   }
 }

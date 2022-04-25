@@ -1,89 +1,67 @@
 ﻿using ArgHandling;
 using ImageGeneration;
+using TextParsing;
 
-ArgumentParser parser = new();
-parser.AddArgument("demo", "d", "demofile", help: "Path to demo file output");
+ArgumentParser argParser = new();
+argParser.AddArgument("file", "f", "file", help: "Path to file to parse (required)");
+argParser.AddArgument("output", "o", "output", help: "Path to output file (required)");
 
 Dictionary<string, string> kwargs;
 try
 {
-    kwargs = parser.Parse(args);
+    kwargs = argParser.Parse(args);
 }
 catch (ArgumentException ex)
 {
     Console.Error.WriteLine(ex.Message);
-    parser.PrintHelp();
+    argParser.PrintHelp();
     return;
 }
 
 if (kwargs.ContainsKey("help"))
 {
-    parser.PrintHelp();
+    argParser.PrintHelp();
+    return;
+}
+if (!kwargs.ContainsKey("file"))
+{
+    Console.Error.WriteLine("Missing required parameter --file!");
+    argParser.PrintHelp();
+    return;
+}
+if (!kwargs.ContainsKey("output"))
+{
+    Console.Error.WriteLine("Missing required parameter --output!");
+    argParser.PrintHelp();
     return;
 }
 
-ExampleImage demo;
-
-if (kwargs.ContainsKey("demofile"))
+string filePath = kwargs["file"];
+if (!File.Exists(filePath))
 {
-    demo = new(kwargs["demofile"]);
+    Console.Error.WriteLine("File \"" + filePath + "\" does not exist!");
+    return;
 }
-else
+string outPath = kwargs["output"];
+if (File.Exists(outPath))
 {
-    demo = new();
+    Console.WriteLine("Warning! Output file \"" + outPath + "\" already exists and will be overwritten!");
 }
-/*
-demo.Render(); // Default demo
 
-demo = new("demo notes.png", ExampleType.Notes);
-demo.Render(); // Notes demo
-*/
-Document document = new("sample scales.png", new(800, 800));
+Document document = new(outPath, new(800, 800));
 
-Staff staff = new(document, null, new(), new("gClef", new(), document, lookupGlyph: true));
-int len = 4;
-staff.notes.Add(new Note(len, -2, new(), document, true, "accidentalFlat"));
-staff.notes.Add(new Note(len, -1.5f, new(), document, true));
-staff.notes.Add(new Note(len, -1, new(), document, accidental: "accidentalSharp"));
-staff.notes.Add(new Note(len, -0.5f, new(), document));
-staff.notes.Add(new Note(len, 0, new(), document));
-staff.notes.Add(new Note(len, 0.5f, new(), document));
-staff.notes.Add(new Note(len, 1, new(), document));
-staff.notes.Add(new Note(len, 1.5f, new(), document));
-staff.notes.Add(new Note(len, 2, new(), document, true));
-
-len = 8;
-staff.notes.Add(new Note(len, -2, new(), document));
-staff.notes.Add(new Note(len, -1.5f, new(), document));
-staff.notes.Add(new Note(len, -1, new(), document));
-staff.notes.Add(new Note(len, -0.5f, new(), document, accidental: "accidentalDoubleFlat"));
-staff.notes.Add(new Note(len, 0, new(), document));
-staff.notes.Add(new Note(len, 0.5f, new(), document));
-staff.notes.Add(new Note(len, 1, new(), document));
-staff.notes.Add(new Note(len, 1.5f, new(), document));
-staff.notes.Add(new Note(len, 2, new(), document));
-
-len = 1;
-staff.notes.Add(new Note(len, -2, new(), document));
-staff.notes.Add(new Note(len, -1.5f, new(), document));
-staff.notes.Add(new Note(len, -1, new(), document));
-staff.notes.Add(new Note(len, -0.5f, new(), document));
-staff.notes.Add(new Note(len, 0, new(), document));
-staff.notes.Add(new Note(len, 0.5f, new(), document));
-staff.notes.Add(new Note(len, 1, new(), document));
-staff.notes.Add(new Note(len, 1.5f, new(), document));
-staff.notes.Add(new Note(len, 2, new(), document));
-
-len = 2;
-staff.notes.Add(new Note(len, -2, new(), document));
-staff.notes.Add(new Note(len, -1.5f, new(), document));
-staff.notes.Add(new Note(len, -1, new(), document));
-staff.notes.Add(new Note(len, -0.5f, new(), document));
-staff.notes.Add(new Note(len, 0, new(), document));
-staff.notes.Add(new Note(len, 0.5f, new(), document));
-staff.notes.Add(new Note(len, 1, new(), document));
-staff.notes.Add(new Note(len, 1.5f, new(), document));
-staff.notes.Add(new Note(len, 2, new(), document));
+FileParser parser = new(filePath);
+TimeSignature ts = null;
+if (parser.timeUpper > 0 && parser.timeLower > 0)
+{
+    ts = new(parser.timeUpper, parser.timeLower, new(), document);
+}
+Staff staff = new(document, ts, new(), new(parser.clef, new(), document, lookupGlyph: true));
+Note note;
+while ((note = parser.ReadNote(document)) != null)
+{
+    staff.notes.Add(note);
+}
 staff.Draw();
 
 document.SaveFile();

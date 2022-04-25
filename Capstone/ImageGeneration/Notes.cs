@@ -61,7 +61,7 @@ namespace ImageGeneration
         public override void Draw()
         {
             SKPoint originalPosition = Position;
-            if (accidental != "")
+            if (accidental != null && accidental != "")
             {
                 GlyphElement accidentalElement = new(accidental, Position, Document, FontSize, true);
                 accidentalElement.Draw();
