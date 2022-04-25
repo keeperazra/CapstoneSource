@@ -29,17 +29,45 @@ namespace ImageGeneration
                 duration = value;
             }
         }
-        public Note(int duration, float offset, SKPoint position, Document document, float fontSize = 24)
+        public bool dotted;
+        public float ExpectedWidth
+        {
+            get
+            {
+                float size = 20;
+                if (dotted)
+                {
+                    size += 5;
+                }
+                if (accidental != "") // TODO: different accidentals can be different widths
+                {
+                    size += 10;
+                }
+                return size;
+            }
+        }
+        public string accidental; // TODO: Enforce value?
+        public Note(int duration, float offset, SKPoint position, Document document, bool dot = false, string accidental = "", float fontSize = 24)
         {
             Duration = duration;
             staffOffset = offset;
             Direction = staffOffset < 0 ? NoteDirection.Up : NoteDirection.Down;
             Position = position;
             Document = document;
+            dotted = dot;
+            this.accidental = accidental;
             FontSize = fontSize;
         }
         public override void Draw()
         {
+            SKPoint originalPosition = Position;
+            if (accidental != "")
+            {
+                GlyphElement accidentalElement = new(accidental, Position, Document, FontSize, true);
+                accidentalElement.Draw();
+                Position = new(originalPosition.X + 10, originalPosition.Y);
+            }
+
             if (Duration == 1)
             {
                 Head = new("noteheadWhole", Position, Document, FontSize, true);
@@ -98,6 +126,27 @@ namespace ImageGeneration
             {
                 Tail.Draw();
             }
+
+            if (dotted)
+            {
+                float targetX = Position.X;
+                float targetY = Position.Y;
+                targetX += 12; // wacky
+                if (staffOffset == Math.Floor(staffOffset))
+                {
+                    if (staffOffset < 0)
+                    {
+                        targetY -= Staff.lineSep / 2;
+                    }
+                    else
+                    {
+                        targetY += Staff.lineSep / 2;
+                    }
+                }
+                Document.Canvas.DrawCircle(targetX, targetY, 1.5f, Document.MusicPaint);
+            }
+
+            Position = originalPosition; // Restore position if changed
         }
     }
 }

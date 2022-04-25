@@ -10,7 +10,7 @@ namespace ImageGeneration
         public ArrayList measuredNotes;
         public GlyphElement Clef { get; set; }
         public Document Document { get; set; }
-        private const float lineSep = 6;
+        public const float lineSep = 6;
         public Staff(Document document, TimeSignature timeSignature = null, ArrayList startingNotes = null, GlyphElement clef = null)
         {
             Document = document;
@@ -68,7 +68,7 @@ namespace ImageGeneration
                     {
                         note.Position = new(currentX, OffsetFromCenterline(centerlineY, note.staffOffset));
                         note.Draw();
-                        currentX += 20;
+                        currentX += note.ExpectedWidth;
                     }
                     if (currentX >= MAXX)
                     {
