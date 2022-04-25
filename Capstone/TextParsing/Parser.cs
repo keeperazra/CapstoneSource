@@ -48,7 +48,7 @@ namespace TextParsing
                     if (index >= 0)
                     {
                         string temp = line[(index + 6)..].Split(' ')[0].Trim('"');
-                        clef = CleffToGlyphName(temp);
+                        clef = ClefToGlyphName(temp);
                         clefName = temp;
                     }
                 }
@@ -169,7 +169,7 @@ namespace TextParsing
         {
             return !cs.Contains((char)_stream.Peek()) ? -1 : _stream.Read();
         }
-        private static string CleffToGlyphName(string clef)
+        private static string ClefToGlyphName(string clef)
         {
             return clef switch
             {
@@ -203,7 +203,7 @@ namespace TextParsing
                 octave = group["octave"].Value;
                 settings["octave"] = octave;
             }
-            else if (mode != NoteMode.Relative && settings.ContainsKey("octave"))
+            else if (mode == NoteMode.Absolute && settings.ContainsKey("octave"))
             {
                 octave = (string)settings["octave"];
             }
