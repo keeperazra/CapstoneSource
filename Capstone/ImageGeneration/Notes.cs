@@ -72,13 +72,9 @@ namespace ImageGeneration
             {
                 Head = new("noteheadWhole", Position, Document, FontSize, true);
             }
-            else if (Duration == 2)
+            else if (Duration == 2 || Duration == 4)
             {
-                Head = new("noteheadHalf", Position, Document, FontSize, true);
-            }
-            else if (Duration == 4)
-            {
-                Head = new("noteheadBlack", Position, Document, FontSize, true);
+                Head = Duration == 2 ? new("noteheadHalf", Position, Document, FontSize, true) : new("noteheadBlack", Position, Document, FontSize, true);
                 Stem = new();
                 if (Direction == NoteDirection.Up)
                 {
